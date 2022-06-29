@@ -1,0 +1,289 @@
+<div class="ishibannerwithtext page-width">
+     {% if section.blocks.size > 0 %}
+        <div class="ishibannerwithtext_grid">
+          {% assign i = 1 %}
+          {% for block in section.blocks %}
+          <div id="bannerwithtext-{{i}}" class="ishibannerwithtext-container 
+            {% if section.settings.banner_columns == '1' %} col-lg-12 col-md-12 col-sm-12 col-xs-12 one-column
+            {% elsif section.settings.banner_columns == '2' %} col-lg-6 col-md-6 col-sm-12 col-xs-12 two-column
+            {% elsif section.settings.banner_columns == '3' %} col-xl-4 col-lg-6 col-md-6 col-sm-12 col-xs-12 three-column
+            {% elsif section.settings.banner_columns == '4' %} col-xl-3 col-lg-6 col-md-6 col-sm-12 col-xs-12 four-column
+            {% endif %}">
+            <div class="image-container">
+              {% if block.settings.image != blank %}
+              <div class="media" style="padding-bottom: {{ 1 | divided_by: block.settings.image.aspect_ratio | times: 100 }}%;">
+                 {% endif %}
+             
+              <a class="ishi-customhover-{{ block.settings.bannerhover }} {{ block.settings.bannerhovercolor }}-color {% if block.settings.banner_scale_enable %}scale{% endif %}" href="{% if block.settings.banner_link != blank %}{{ block.settings.banner_link }}{% else %}{{ routes.root_url }}{% endif %}">
+              {% if block.settings.image != blank %}
+                 <img class="lazyload" 
+                 data-src="{{ block.settings.image | img_url: 'master' }}"
+                 alt="Banner Image">
+              
+                 {% else %}
+                  {{ 'image' | placeholder_svg_tag: 'ishi-placeholder' }}
+                {% endif %}
+               {% if block.settings.banneroffer != blank or block.settings.bannertitle != blank or block.settings.button_label != blank %}
+                    <div class="banner-data {{ block.settings.textposition }}">
+                    {% if block.settings.banneroffer != blank %}
+                      <div class="banner-offer">{{ block.settings.banneroffer }}</div>
+                    {% endif %}
+                    {% if block.settings.bannertitle != blank %}
+                          <div class="banner-title">{{ block.settings.bannertitle }}</div>
+                    {% endif %}
+                    {% if block.settings.button_label != blank %}
+                      <div class="btn">
+                        {{ block.settings.button_label | escape }}
+                      </div>
+                    {% endif %}
+                    </div>
+                  {% endif %}
+                </a>
+                 {% if block.settings.image != blank %}
+               </div>
+               {% endif %}
+            </div>
+            {% assign i = i | plus: 1 %}
+          </div>
+          {% endfor %}
+        </div>
+    {% endif %}
+</div>
+
+<style type="text/css">
+  #shopify-section-{{ section.id }} {
+    margin-bottom: {{ section.settings.section_bottom_spacing_desktop }}px;
+  }
+  #shopify-section-{{ section.id }} .ishibannerwithtext-container {
+    padding: 0 {{ section.settings.banner_leftright_internal_padding | divided_by: 2 }}px;
+    margin-bottom: {{ section.settings.banner_leftright_internal_padding }}px;
+  }
+   #shopify-section-{{ section.id }} .ishibannerwithtext_grid{
+    margin: 0 -{{ section.settings.banner_leftright_internal_padding | divided_by: 2 }}px;
+  }
+  {% assign i = 1 %}
+  {% for block in section.blocks %}
+    #shopify-section-{{ section.id }} #bannerwithtext-{{i}} .banner-data .banner-offer{
+      color: {{ block.settings.textcolor1 }};
+    }
+    #shopify-section-{{ section.id }} #bannerwithtext-{{i}} .banner-data .banner-title{
+      color: {{ block.settings.textcolor2 }};
+    }
+    #shopify-section-{{ section.id }} #bannerwithtext-{{i}} .banner-data .btn{
+      background-color: {{ block.settings.btn_bgcolor }};
+      border-color:{{ block.settings.btn_bgcolor }};
+      color: {{ block.settings.btn_textcolor }};
+    }
+   #shopify-section-{{ section.id }} #bannerwithtext-{{i}} .banner-data .btn:hover{
+      background-color: {{ block.settings.btn_bghovercolor }};
+      color: {{ block.settings.btn_texthovercolor }};
+      border-color: {{ block.settings.btn_bghovercolor }};
+    }
+  {% assign i = i | plus: 1 %}
+  {% endfor %}
+  
+  @media (max-width: 767px) {
+    #shopify-section-{{ section.id }} {
+      margin-bottom: {{ section.settings.section_bottom_spacing_mobile }}px;
+    }
+  }
+</style>
+
+{% schema %}
+  {
+    "name": "Banner With Text",
+    "tag": "section",
+    "class": "banner-with-text-section",
+    "settings": [
+      {
+        "type": "select",
+        "id": "banner_columns",
+        "label": "Select Number Of Columns",
+        "default": "2",
+        "options": [
+          { "value": "1", "label": "One"},
+          { "value": "2", "label": "Two"},
+          { "value": "3", "label": "Three"},
+          { "value": "4", "label": "Four"}
+        ]
+      },
+      {
+        "type": "range",
+        "id": "banner_leftright_internal_padding",
+        "label": "Banner Left & Right Internal Spacing/Padding",
+        "min": 0,
+        "max": 30,
+        "step": 5,
+        "default": 30
+      },
+      {
+        "type": "header",
+        "content": "Section Bottom Spacing"
+      },
+      {
+        "type": "range", 
+        "id": "section_bottom_spacing_desktop",
+        "label": "Desktop",
+        "min": 0,
+        "max": 70,
+        "step": 10,
+        "default": 40
+      },
+      {
+        "type": "range",
+        "id": "section_bottom_spacing_mobile",
+        "label": "Mobile",
+        "min": 0, 
+        "max": 50,
+        "step": 10, 
+        "default": 0
+      }
+    ],
+    "blocks": [ 
+      { 
+        "type": "image",
+        "name": "Banner",
+        "settings": [
+          {
+            "type": "image_picker",
+            "id": "image",
+            "label": "Image",
+            "info": "Size: 678px X 350px"
+          },
+          {
+            "type": "checkbox",
+            "id": "banner_scale_enable",
+            "label": "Scale Banner",
+            "default": false
+          },
+          {
+            "type": "select",
+            "id": "bannerhover",
+            "label": "Hover",
+			"default": "fadeinrotate3D",
+            "options": [
+              { "value": "none", "label": "None"},
+              { "value": "fadeinnormal", "label": "FadeIn Normal"},
+              { "value": "fadeinflip", "label": "FadeIn Flip"},
+              { "value": "fadeinrotate", "label": "FadeIn Rotate"},
+              { "value": "fadeinrotate3D", "label": "FadeIn Rotate3D"},
+              { "value": "fadeintop", "label": "FadeIn Top"},
+              { "value": "fadeinbottom", "label": "FadeIn Bottom"},
+              { "value": "fadeintopbottom", "label": "FadeIn Top Bottom"},
+              { "value": "fadeoutcenter", "label": "FadeOut Center"},
+              { "value": "fadeinoutbordercorner", "label": "FadeInOut BorderCorner"},
+              { "value": "doublefadeincenter", "label": "Double FadeInOut Center"},
+              { "value": "fadeinoutsingle", "label": "FadeInOut Single Scroll"},
+              { "value": "fadeinoutdoublevertical", "label": "FadeInOut Double Scroll"},
+              { "value": "perspective", "label": "Perspective"},
+              { "value": "fadeinoutrotatevertical", "label": "FadeInOut Rotate Vertical"}
+            ]
+          },
+          {
+            "type": "select",
+            "id": "bannerhovercolor",
+            "label": "Hover Color",
+            "default": "dark",
+            "options": [
+              { "value": "light", "label": "Light"},
+              { "value": "dark", "label": "Dark"}
+            ]
+          },
+          {
+            "type": "select",
+            "id": "textposition",
+            "label": "Text Position",
+            "default": "bottom-left",
+            "options": [
+              { "value": "middle-center", "label": "Middle"},
+              { "value": "middle-left", "label": "Middle Left"},
+              { "value": "middle-right", "label": "Middle Right"},
+              { "value": "top-left", "label": "Top Left"},
+              { "value": "top-right", "label": "Top Right"},
+              { "value": "bottom-left", "label": "Bottom Left"},
+              { "value": "bottom-right", "label": "Bottom Right"}
+            ]
+          },
+          {
+            "type": "text",
+            "id": "banneroffer",
+            "label": "Sub Heading",
+            "default": "Sub Heading"
+          },
+          {
+            "type": "text",
+            "id": "bannertitle",
+            "label": "Heading",
+			"default": "Banner Heading"
+          },
+          {
+            "type": "text",
+            "id": "button_label",
+            "label": "Button Label",
+            "default": "SHOP NOW"
+          },
+          {
+            "type": "url",
+            "id": "banner_link",
+            "label": "Link"
+          },
+          {
+            "type": "header",
+            "content": "Color Settings"
+          },
+          {
+            "type": "color",
+            "id": "textcolor1",
+            "label": "Sub Heading",
+            "default": "#666666"
+          },
+          {
+            "type": "color",
+            "id": "textcolor2",
+            "label": "Heading",
+            "default": "#000000"
+          },
+          {
+            "type": "color",
+            "id": "btn_bgcolor",
+            "label": "Button Background",
+            "default": "#ffffff"
+          },
+          {
+            "type": "color",
+            "id": "btn_textcolor",
+            "label": "Button Text",
+            "default": "#000000"
+          },
+          {
+            "type": "color",
+            "id": "btn_bghovercolor",
+            "label": "Button Hover Background",
+            "default": "#292929"
+          },
+          {
+            "type": "color",
+            "id": "btn_texthovercolor",
+            "label": "Button Hover Text",
+            "default": "#ffffff"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "Banner With Text",
+        "blocks": [
+          {
+            "type": "image"
+          },
+          {
+            "type": "image"
+          }
+        ]
+      }
+    ]
+  }
+{% endschema %}
+
+   
