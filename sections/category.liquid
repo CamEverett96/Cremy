@@ -1,0 +1,218 @@
+<div class="ishicategoryblock {% if section.settings.category_layout == 'box' %}page-width{% endif %}" >
+  {% if section.settings.hometitle != blank or section.settings.subtitle != blank %}
+  <div class="section-header center">
+    {% if section.settings.subtitle != blank %}
+        <div class="sub-title">{{ section.settings.subtitle }}</div>
+        {% endif %}
+    {% if section.settings.hometitle != blank %}
+    <h2 class="title">{{ section.settings.hometitle | escape }}</h2>
+      {% endif %}
+  </div>
+  {% endif %}
+  {% assign i = 1 %}
+  {% if section.blocks.size > 0 %}
+  <div class="{% if section.settings.slider_grid == 'slider' %}ishicategoryblock-carousel-{{ section.id }} owl-carousel owl-theme {% else %}ishicategory_grid{% endif %}" data-grid="{{section.settings.slider_grid}}" >
+    {% for block in section.blocks %}
+    <div id="ishicategoryblock-{{i}}" class="ishicategoryblock-container item {% if section.settings.slider_grid == 'grid' %} col-xl-2 col-lg-3 col-md-4 col-sm-4 col-xs-6 ishicategoryblock-grid{% endif %}">
+      <a href="{% if block.settings.button_link %}{{ block.settings.button_link }}{% else %}{{ routes.root_url }}{% endif %}">
+        <div class="image-container">
+          {% if block.settings.image != blank %}
+          <img class="lazyload" data-src="{{ block.settings.image | img_url: 'master' }}" alt="Category Image">
+          {% else %}
+          {{ 'image' | placeholder_svg_tag: 'ishi-placeholder' }}
+          {% endif %}  
+        </div>
+        {% if block.settings.title != blank %} 
+        <div class="text-container">
+          {{ block.settings.title | escape }}
+        </div>
+        {% endif %}
+      </a> 
+      {% assign i = i | plus: 1 %}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
+
+<style type="text/css">
+   #shopify-section-{{ section.id }} {
+    margin-bottom: {{ section.settings.section_bottom_spacing_desktop }}px;
+   }
+  {% assign i = 1 %}
+  {% for block in section.blocks %}
+    #shopify-section-{{ section.id }} .ishicategoryblock #ishicategoryblock-{{i}} a{
+      background: {{ block.settings.bgcolor }};
+    }
+    #shopify-section-{{ section.id }} .ishicategoryblock #ishicategoryblock-{{i}} .text-container{
+      color: {{ block.settings.textcolor }};
+    }
+    {% assign i = i | plus: 1 %}
+  {% endfor %}
+   @media (max-width: 991px) {
+    #shopify-section-{{ section.id }} {
+      margin-bottom: {{ section.settings.section_bottom_spacing_mobile }}px;
+    }
+  }
+</style>
+
+<script>
+  jQuery(document).ready(function() {
+     $('.ishicategoryblock-carousel-{{ section.id }}').owlCarousel({
+      nav: true, // Show next and prev buttons
+      navText: [
+        '<i class=\'fa fa-angle-left\'></i>',
+      	'<i class=\'fa fa-angle-right\'></i>'
+      ],
+      dots: false,
+      loop: true,
+      rewind: true,
+      autoplay: true,
+      autoplayTimeout:3000,
+      margin:40,
+      responsive: {
+        0: {
+          items: 2,
+       	  margin: 15
+        },
+        544: {
+          items: 3,
+          margin: 25
+        },
+        768: {
+          items: 3
+        },
+        992: {
+          items: 4
+        },
+        1200: {
+          items: 5
+        },
+        1500: {
+          items: 6
+        }
+      }
+    });
+  });
+</script>
+
+
+{% schema %}
+  {
+    "name": "Category Block",
+    "tag": "section",
+    "class": "ishi-category-block",
+    "settings": [
+      {
+        "type": "text",
+        "id": "subtitle",
+        "label": "Sub Title",
+        "default": "CÖUTURE"
+      },
+	  {
+        "type": "text",
+        "id": "hometitle",
+        "label": "Main Title",
+        "default": "Category Product"
+      },
+      {
+        "type": "select",
+        "id": "category_layout",
+        "label": "Select Category Layout",
+        "default": "box",
+        "options": [
+          { "value": "box", "label": "Box"},
+          { "value": "full", "label": "Full"}
+        ]
+      },
+      {
+        "type": "select",
+        "id": "slider_grid",
+        "label": "Select Category Style",
+        "default": "slider",
+        "options": [
+          { "value": "grid", "label": "Grid"},
+          { "value": "slider", "label": "Slider"}
+        ]
+      },
+	  {
+        "type": "header",
+        "content": "Section Bottom Spacing"
+      },
+      {
+        "type": "range",
+        "id": "section_bottom_spacing_desktop",
+        "label": "Desktop",
+        "min": 0,
+        "max": 70,
+        "step": 10,
+        "default": 70
+      },
+      {
+        "type": "range",
+        "id": "section_bottom_spacing_mobile",
+        "label": "Mobile",
+        "min": 0,
+        "max": 50,
+        "step": 10,
+        "default": 30
+      }
+    ],
+    "blocks": [
+      { 
+        "type": "image",
+        "name": "category",
+        "settings": [
+          {
+            "type": "color",
+            "id": "bgcolor",
+            "label": "Background Color",
+            "default": "#f3f3f3"
+          },
+ 	      {
+            "type": "color",
+            "id": "textcolor",
+            "label": "Text Color",
+            "default": "#000"
+          },
+          {
+            "type": "image_picker",
+            "id": "image",
+            "label": "Image",
+            "info": "Size: 100px X 100px"
+          },
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Title",
+            "default": "Category Title" 
+          },
+          {
+            "type": "url",
+            "id": "button_link",
+            "label": "Link"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "Category Block",
+		"blocks": [
+                  {
+                    "type": "image"
+                  },
+                  {
+                    "type": "image"
+                  },
+                  {
+                    "type": "image"
+                  },
+                  {
+                    "type": "image"
+                  }
+                ]
+      }
+    ]
+  }
+{% endschema %}

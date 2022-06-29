@@ -1,0 +1,334 @@
+
+
+<div class="page-width">
+  <div class="row{% if section.settings.bannerposition %} flex{% endif %}">
+    <div class="collection{% if section.settings.hidebanner %} col-xl-12 col-lg-12 col-md-12{% else %} product-full col-xl-8 col-lg-7 col-md-12{% endif %}">
+      {% if section.settings.hometitle != blank or section.settings.subtitle != blank  %}
+          <div class="section-header center">
+            {% if section.settings.subtitle != blank %}
+            <div class="sub-title">{{ section.settings.subtitle }}</div>
+            {% endif %}
+            {% if section.settings.hometitle != blank %}
+            <h2 class="title">{{ section.settings.hometitle }}</h2>
+            {% endif %}
+          </div>
+        {% endif %}
+
+      {%- liquid
+        assign products_to_display = section.settings.collection.all_products_count
+
+        if section.settings.collection.all_products_count > section.settings.products_to_show
+          assign products_to_display = section.settings.products_to_show
+        endif
+      %}
+
+    <div class="ishi-featured-product-tab">
+      {% if section.blocks.size > 1 %}
+        <ul class="ishi-product-tabs nav ishi-product-nav-tabs tab-id">
+          {% assign i = 1 %}
+          {% for block in section.blocks %}
+           {% if block.settings.title != blank %}
+          <li class="ishi-product-tab-item{% if i == 1 %} active{% endif %}"><a class="ishi-product-nav-link" data-href="#tab-{{i}}-{{ section.id }}">{{block.settings.title}}</a></li>
+            {% endif %}
+          {% assign i = i | plus: 1 %}
+          {% endfor %}
+        </ul>
+       {% endif %}
+        <div class="ishi-product-tab-content">
+          {% assign i = 1 %}
+          {% for block in section.blocks %}
+          <div id="tab-{{i}}-{{ section.id }}" class="ishi-product-tab-pane ishi-fade{% if i == 1 %} active{% endif %}">
+        {%- assign collection = collections[block.settings.collection] -%}
+        <ul class="product-list grid owl-carousel owl-theme productblock{{i}}-{{ section.id }}" role="list">
+          {% assign counter = 1 %}
+          {%- for product in collection.products limit: section.settings.products_to_show -%}
+            <li class="grid__item">
+              {% render 'product-card-grid',
+                product_card_product: product,
+                media_size: settings.image_ratio,
+                product_count: {{counter}},
+                show_secondary_image: settings.show_secondary_image,
+                show_vendor: settings.show_vendor
+              %}
+              {% assign counter = counter | plus: 1 %}
+            </li>
+          {%- else -%}
+            {%- for i in (1..3) -%}
+              <li class="grid__item ">
+                {% render 'product-card-placeholder' %}
+              </li>
+            {%- endfor -%}
+          {%- endfor -%}
+        </ul>
+
+      {%- if block.settings.show_view_all -%}
+        <div class="center view-all-btn">
+          <a href="{{ block.settings.collection.url }}"
+            class="button"
+            aria-label="{{ 'sections.featured_collection.view_all_label' | t: collection_name: section.settings.collection.title }}"
+          >
+            {{ 'sections.featured_collection.view_all' | t }}
+          </a>
+        </div>
+      {%- endif -%}
+      </div>
+          {% assign i = i | plus: 1 %}
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+    {% if section.settings.hidebanner == blank %}
+    <div class="collection-banner col-xl-4 col-lg-5 col-md-12{% if section.settings.hidemobile %} hidden-lg-down{% endif %}">
+   <div class="image-wrapper">
+     {% if section.settings.image != blank %}
+     <a class="media ishi-customhover-{{ section.settings.bannerhover }} {{ section.settings.bannerhovercolor }}-color {% if section.settings.banner_scale_enable %}scale{% endif %}" href="{% if section.settings.banner_link != blank %}{{ section.settings.banner_link }}{% else %}{{ routes.root_url }}{% endif %}" style="padding-bottom: {{ 1 | divided_by: section.settings.image.aspect_ratio | times: 100 }}%;">
+       <img class="lazyload"
+            data-src="{{ section.settings.image | img_url: 'master' }}"
+            alt="Banner Image">
+     </a>
+     {% else %}
+     {{ 'image' | placeholder_svg_tag: 'ishi-placeholder' }}
+     {% endif %}                
+  </div>
+  </div>
+    {% endif %}
+  </div>
+</div>
+
+
+<style type="text/css">
+  #shopify-section-{{ section.id }} {
+    margin-bottom: {{ section.settings.section_bottom_spacing_desktop }}px;
+  }
+  @media (max-width: 767px) {
+    #shopify-section-{{ section.id }} {
+      margin-bottom: {{ section.settings.section_bottom_spacing_mobile }}px;
+    }
+  }
+</style>
+
+<script>
+  $(document).ready(function () {
+    $(document).on("click",".ishi-product-nav-link",function() {
+      $(this).parents(".ishi-product-nav-tabs").find(".ishi-product-tab-item").removeClass("active");
+      $(this).parents(".ishi-product-tab-item").addClass("active");
+
+      $(this).parents(".ishi-featured-product-tab").find(".ishi-product-tab-pane").removeClass("active");
+      var target = $(this).data("href");
+      $(target).addClass("active");
+    });
+  });
+</script>
+
+
+<script>
+  jQuery(document).ready(function() {
+      {% assign i = 1 %}
+      {% for block in section.blocks %}
+          $(".productblock{{i}}-{{ section.id }}").owlCarousel({
+            nav: true, // Show next and prev buttons
+            navText: [
+              '<i class=\'fa fa-angle-left\'></i>',
+              '<i class=\'fa fa-angle-right\'></i>'
+            ],
+            dots: false,
+            rewind: true,
+            loop: false,
+            margin:30,
+            responsive: {
+              0: {
+                items: 2,
+                margin:10,
+              },
+              544: {
+                items: 2,
+                margin:10,
+              },
+              768: {
+                items: 2
+              },
+              {% if section.settings.hidebanner == blank %}
+              992: {
+                items: 2
+              },
+              1200: {
+                items: 2
+              },
+              1500: {
+                items: 3
+              }
+             {% else %}
+              992: {
+                items: 3
+              },
+              1200: {
+                items: 3
+              },
+              1500: {
+                items: 4
+              }
+             {% endif %}
+            }
+          });
+        {% assign i = i | plus: 1 %}
+      {% endfor %}
+  });
+</script>
+{% schema %}
+{
+  "name": "Product With Banner",
+  "tag": "section",
+  "class": "featured-product-section productwithbanner",
+  "settings": [
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Sub Title",
+      "default": "CÖUTURE"
+    },
+    {
+      "type": "text",
+      "id": "hometitle",
+      "label": "Main Title",
+      "default": "Trending Products"
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "min": 3,
+      "max": 18,
+      "step": 1,
+      "default": 6,
+      "label": "Maximum Products to Show"
+    },
+    {
+      "type": "header",
+      "content": "Banner Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "hidebanner",
+      "label": "Hide Banner",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "hidemobile",
+      "label": "Hide only Mobile",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "bannerposition",
+      "label": "Banner Position left",
+      "default": false
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image",
+      "info": "Size: 442px X 590px"
+    },
+    {
+      "type": "url",
+      "id": "banner_link",
+      "label": "Link"
+    },
+    {
+      "type": "checkbox",
+      "id": "banner_scale_enable",
+      "label": "Scale Banner",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "bannerhover",
+      "label": "Hover",
+      "default": "fadeinrotate3D",
+      "options": [
+        { "value": "none", "label": "None"},
+        { "value": "fadeinnormal", "label": "FadeIn Normal"},
+        { "value": "fadeinflip", "label": "FadeIn Flip"},
+        { "value": "fadeinrotate", "label": "FadeIn Rotate"},
+        { "value": "fadeinrotate3D", "label": "FadeIn Rotate3D"},
+        { "value": "fadeintop", "label": "FadeIn Top"},
+        { "value": "fadeinbottom", "label": "FadeIn Bottom"},
+        { "value": "fadeintopbottom", "label": "FadeIn Top Bottom"},
+        { "value": "fadeoutcenter", "label": "FadeOut Center"},
+        { "value": "fadeinoutbordercorner", "label": "FadeInOut BorderCorner"},
+        { "value": "doublefadeincenter", "label": "Double FadeInOut Center"},
+        { "value": "fadeinoutsingle", "label": "FadeInOut Single Scroll"},
+        { "value": "fadeinoutdoublevertical", "label": "FadeInOut Double Scroll"},
+        { "value": "perspective", "label": "Perspective"},
+        { "value": "fadeinoutrotatevertical", "label": "FadeInOut Rotate Vertical"}
+      ]
+    },
+    {
+      "type": "select",
+      "id": "bannerhovercolor",
+      "label": "Hover Color",
+      "default": "dark",
+      "options": [
+        { "value": "light", "label": "Light"},
+        { "value": "dark", "label": "Dark"}
+      ]
+    },
+	{
+      "type": "header",
+      "content": "Section Bottom Spacing"
+    },
+    {
+      "type": "range",
+      "id": "section_bottom_spacing_desktop",
+      "label": "Desktop",
+      "min": 0,
+      "max": 70,
+      "step": 10,
+      "default": 70
+    },
+    {
+      "type": "range",
+      "id": "section_bottom_spacing_mobile",
+      "label": "Mobile",
+      "min": 0,
+      "max": 50,
+      "step": 10,
+      "default": 30
+    }
+  ],
+"blocks": [
+    {
+      "type": "product_tab",
+      "name": "Products Block",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Product Tab Title"
+        },
+        {
+          "id": "collection",
+          "type": "collection",
+          "label": "Collection"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_view_all",
+          "label": "Enable \"View all\" button if collection has more products than shown",
+          "default": true
+        }
+	  ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product With Banner",
+	  "blocks": [
+        {
+          "type": "product_tab"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

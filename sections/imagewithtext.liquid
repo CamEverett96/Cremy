@@ -1,0 +1,255 @@
+{% if section.settings.layout == 'box' %} <div class="page-width">{% endif %}
+<div class="imagewithtextblock {% if section.settings.bgimage %}bgimage lazyload{% else %}bg-color{% endif %}" {% if section.settings.bgimage %}data-bg="{{ section.settings.bgimage | img_url: 'master' }}"{% endif %}>
+  {% if section.settings.layout == 'full' %} 
+  <div class="page-width">
+    <div class="row">
+      {% endif %}
+      {% if section.blocks.size > 0 %}
+      {% for block in section.blocks %}
+      <div class="imagewithtext-info col-lg-6 col-md-12 col-sm-12 col-xs-12 {{block.settings.text_style}}">
+        <div class="about-image-wrapper">
+          <div class="image-wrapper">
+            {% if block.settings.image != blank %}
+            <a href="{% if block.settings.button_link != blank %}{{ block.settings.button_link }}{% else %}{{ routes.root_url }}{% endif %}">
+            <img class="lazyload"
+                 data-src="{{ block.settings.image | img_url: 'master' }}"
+                 alt="Banner Image">
+            </a>
+            {% else %}
+            {{ 'image' | placeholder_svg_tag: 'ishi-placeholder' }}
+            {% endif %}  
+            {% if block.settings.video_url != blank %}
+            <div class="video-play-icon">
+              <a class="video" href="{{ block.settings.video_url }}">
+                <span class="ripple-effect">
+                  <i class="fa fa-play-circle" aria-hidden="true"></i>
+                </span>
+              </a> 
+            </div>
+            {% endif %}
+          </div>
+        </div>
+        <div class="text-wrapper">
+          <div class="about-text-block section-header {{ block.settings.textalignment }}">
+            {% if block.settings.aboutsubtitle != blank %}
+            <div class="sub-title">{{ block.settings.aboutsubtitle | escape }}</div>
+            {% endif %}
+            {% if block.settings.abouttitle != blank %}
+            <h2 class="title">{{ block.settings.abouttitle | escape }}</h2>
+            {% endif %}
+            {% if block.settings.text != blank %}
+            <div class="description">{{ block.settings.text }}</div>
+            {% endif %}
+            {% if block.settings.button_label != blank and block.settings.button_link != blank %}
+            <a href="{% if block.settings.button_link != blank %}{{ block.settings.button_link }}{% else %}{{ routes.root_url }}{% endif %}" class="btn about-btn">
+              {{ block.settings.button_label | escape }}
+            </a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+      {% endif %}
+      {% if section.settings.layout == 'full' %} 
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% if section.settings.layout == 'box' %}</div>{% endif %}
+
+<script>
+  jQuery(document).ready(function() {
+
+    $('.video').magnificPopup({
+    type: 'iframe',
+    closeOnBgClick: false, 
+    iframe: {
+        markup: '<div class="mfp-iframe-scaler">'+
+        '<div class="mfp-close"></div>'+
+        '<iframe class="mfp-iframe" frameborder="0" allowfullscreen></iframe>'+
+        '<div class="mfp-title">Some caption</div>'+
+        '</div>'
+    },
+    callbacks: {
+        markupParse: function(template, values, item) {
+            values.title = item.el.attr('title');
+        }
+    }, 
+    // Delay in milliseconds before popup is removed
+    removalDelay: 300,
+
+    // Class that is added to popup wrapper and background
+    // make it unique to apply your CSS animations just to this exact popup
+    mainClass: 'mfp-fade'
+  });
+  });
+</script>
+
+<style type="text/css"> 
+  #shopify-section-{{ section.id }}{
+    margin-bottom: {{ section.settings.section_bottom_spacing_desktop }}px;
+  }
+  #shopify-section-{{ section.id }} .imagewithtextblock{
+    padding-top: {{ section.settings.space }}px;
+    padding-bottom: {{ section.settings.space | minus: 30 }}px;
+  }
+  #shopify-section-{{ section.id }} .imagewithtextblock.bg-color{
+    background-color: {{ section.settings.bgcolor }};
+  }
+  @media (max-width: 767px) {
+    #shopify-section-{{ section.id }} .imagewithtextblock{
+      padding: {{ section.settings.space | divided_by: 2 }}px 0;
+    }
+    #shopify-section-{{ section.id }} {
+      margin-bottom: {{ section.settings.section_bottom_spacing_mobile }}px;
+    }
+  }
+</style>
+
+{% schema %}
+{ 
+  "name": "Image With Text",
+  "class": "imagewithtext-section",
+  "tag": "section",
+  "settings": [
+      
+      {
+        "type": "image_picker",
+        "id": "bgimage",
+        "label": "Background Image",
+        "info": "Size: 1920px X 850px"
+      },
+      {
+        "type": "color",
+        "id": "bgcolor",
+        "label": "Background Color",
+        "default": "#ffffff"
+      },
+      {
+        "type": "range",
+        "id": "space",
+        "min": 0,
+        "max": 100,
+        "step": 10,
+        "label": "Internal Top & Bottom Space/Padding",
+        "default": 0
+      },
+      {
+        "type": "select",
+        "id": "layout",
+        "label": "Layout",
+        "default": "full",
+        "options": [
+          { "value": "box", "label": "Box"},
+          { "value": "full", "label": "Full"}
+        ]
+      },
+      {
+        "type": "header",
+        "content": "Section Bottom Spacing"
+      },
+      {
+        "type": "range",
+        "id": "section_bottom_spacing_desktop",
+        "label": "Desktop",
+        "min": 0,
+        "max": 70,
+        "step": 10,
+        "default": 70
+      },
+      {
+        "type": "range",
+        "id": "section_bottom_spacing_mobile",
+        "label": "Mobile",
+        "min": 0,
+        "max": 50,
+        "step": 10,
+        "default": 30
+      }
+  ],
+  "blocks": [
+      { 
+        "type": "image",
+        "name": "Image With Text Block",
+        "settings": [
+              {
+                "type": "select",
+                "id": "text_style",
+                "label": "Select Style",
+                "default": "style1",
+                "options": [
+                  { "value": "style1", "label": "Similarity"},
+                  { "value": "style2", "label": "Reverce"}
+                ]
+              },
+              {
+                "type": "image_picker",
+                "id": "image",
+                "label": "Image",
+                "info": "Size: 678px X 540px"
+              },
+              {
+                "id": "video_url",
+                 "type": "url",
+                 "label": "Youtube Video URL"
+              },
+              {
+                "type": "select",
+                "id": "textalignment",
+                "label": "Text Alignment",
+                "default": "center",
+                "options": [
+                  { "value": "left", "label": "Left"},
+                  { "value": "center", "label": "Center"},
+                  { "value": "right", "label": "Right"}
+                ]
+              },
+              {
+                "type": "text",
+                "id": "aboutsubtitle",
+                "label": "Sub Title",
+                "default": "CÖUTURE"
+              },
+              {
+                "type": "text",
+                "id": "abouttitle",
+                "label": "Main Title",
+                "default": "All About Couture"
+              },
+              {
+                "type": "html",
+                "id": "text",
+                "label": "HTML Text",
+                "default": "<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, to make a type specimen book.</p>"
+              },
+              {
+                "type": "text",
+                "id": "button_label",
+                "label": "Button Label",
+                "default": "VIEW MORE"
+              },
+              {
+                "type": "url",
+                "id": "button_link",
+                "label": "Button Link"
+              }
+         ]
+      }
+  ],
+  "presets": [
+    {
+      "name": "Image With Text",
+      "blocks": [
+          {
+          "type": "image"
+          },
+          {
+          "type": "image"
+          }
+      ]
+    }
+  ]
+}
+
+
+{% endschema %}

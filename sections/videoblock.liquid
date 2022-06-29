@@ -1,0 +1,225 @@
+<div class="video-block videoblock-{{ section.id }}" data-section-id="{{ section.id }}" data-section-type="video-section" data-mobile-natural="false">
+    <div class="video-inner">
+      <div class="video-content">
+         {%- if section.settings.video_url contains 'youtube.com/watch' -%}
+        {%- assign video_id = section.settings.video_url | split: 'v=' -%}
+        {%- assign video_id = video_id[1] | split: '&' | first -%}
+        <div
+          id="YouTubeVideo-{{ section.id }}"
+          class="video-div"
+          data-type="youtube"
+          data-video-id="{{ video_id }}"></div>
+      {%- endif -%}
+
+      {%- if section.settings.video_url contains 'youtu.be/' -%}
+        {%- assign video_id = section.settings.video_url | split: '.be/' -%}
+        {%- assign video_id = video_id[1] | split: '&' | first -%}
+        <div
+          id="YouTubeVideo-{{ section.id }}"
+          class="video-div"
+          data-type="youtube"
+          data-video-id="{{ video_id }}"></div>
+      {%- endif -%}
+
+      {%- if section.settings.video_url contains '.mp4' or section.settings.video_url contains '.MP4' -%}
+        <video
+          id="Mp4Video-{{ section.id }}"
+          class="video-div"
+          data-type="mp4"
+          src="{{ section.settings.video_url }}"
+          loop muted playsinline autoplay></video>
+      {%- endif -%}
+        
+        {% if section.settings.title1 != blank or section.settings.subtitle != blank or section.settings.button_label != blank %}
+        <div class="video-data hidden-sm-down col-xl-3 col-lg-4 col-md-6 col-sm-12 {{ section.settings.textposition }}">
+          {% if section.settings.title1 != blank %}
+          <div class="title">{{ section.settings.title1 }}</div>
+          {% endif %}
+          {% if section.settings.subtitle != blank %}
+          <div class="sub-title">{{ section.settings.subtitle }}</div>
+          {% endif %}
+          {% if section.settings.button_label != blank %}
+          <a href="{% if section.settings.button_link != blank %}{{ section.settings.button_link }}{% else %}{{ routes.root_url }}{% endif %}" class="btn_link">
+            {{ section.settings.button_label | escape }}
+          </a>
+          {% endif %}
+        </div>
+        {% endif %}
+      </div>
+       {% if section.settings.title1 != blank or section.settings.subtitle != blank or section.settings.button_label != blank %}
+        <div class="video-data hidden-sm-up">
+          {% if section.settings.title1 != blank %}
+          <div class="title">{{ section.settings.title1 }}</div>
+          {% endif %}
+          {% if section.settings.subtitle != blank %}
+          <div class="sub-title">{{ section.settings.subtitle }}</div>
+          {% endif %}
+          {% if section.settings.button_label != blank %}
+          <a href="{% if section.settings.button_link != blank %}{{ section.settings.button_link }}{% else %}{{ routes.root_url }}{% endif %}" class="btn_link">
+            {{ section.settings.button_label | escape }}
+          </a>
+          {% endif %}
+        </div>
+        {% endif %}
+    </div>
+  </div>
+ 
+<style type="text/css">
+  #shopify-section-{{ section.id }} {
+    margin-bottom: {{ section.settings.section_bottom_spacing_desktop }}px;
+  }
+  #shopify-section-{{ section.id }} .video-content:after {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      z-index: 3;
+      background-color: #000;
+      opacity: {{ section.settings.overlay_opacity | divided_by: 100.0 }};
+    }
+  @media (max-width: 767px) {
+    #shopify-section-{{ section.id }} {
+      margin-bottom: {{ section.settings.section_bottom_spacing_mobile }}px;
+    }
+  }
+</style>
+
+<script type="text/javascript">
+      var tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        var firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+        var player;
+        function onYouTubeIframeAPIReady() {
+        player = new YT.Player('YouTubeVideo-{{ section.id }}', {
+          width: '100%',
+          videoId: '{{ video_id }}',
+          host: 'http://www.youtube-nocookie.com',//privacy mode
+          playerVars: { 'controls': 0, //hide controls
+                       'autohide': 1,
+                       'autoplay': 1, // Auto-play the video on load
+                       'loop': 1, // Run the video in a loop
+                        'fs': 0, // Hide the full screen button
+                       'cc_load_policy': 0, // Hide closed captions
+                       'iv_load_policy': 3, // Hide the Video Annotations   
+                       'modestbranding': 1, //hide brand
+                       'showinfo': 0, //hide video info
+                       'mute' : 1 //video is muted
+                      },
+          events: {
+            'onReady': onPlayerReady,
+            'onStateChange': onPlayerStateChange
+          }
+        });
+        }
+        function onPlayerReady(event) {
+          goToStart(event);
+        }
+        function onPlayerStateChange(event) {
+          var tm = player.getCurrentTime();
+          if (event.data == YT.PlayerState.ENDED) {
+            goToStart(event);
+          }
+        }
+        function goToStart(event) {
+          event.target.seekTo(0,1);
+          player.playVideo();
+        }
+</script>
+{% schema %}
+  {
+    "name": "Video Block",
+    "tag": "section",
+    "class": "video-section",
+    "settings": [
+      {
+        "type": "text",
+        "id": "video_url",
+        "label": "Background video link",
+        "default": "https://www.youtube.com/watch?v=_9VUPq3SxOc",
+        "info": "Supports YouTube and .MP4. [Learn more](https://archetypethemes.co/blogs/impulse/how-do-i-add-background-videos)"
+      },
+      {
+        "type": "range",
+        "id": "overlay_opacity",
+        "label": "Text protection",
+        "info": "Darkens your image to ensure your text is readable",
+        "default": 0,
+        "min": 0,
+        "max": 100,
+        "step": 2,
+        "unit": "%"
+      },
+      {
+        "type": "select",
+        "id": "textposition",
+        "label": "Text Position",
+        "default": "bottom-left",
+        "options": [
+          { "value": "top-left", "label": "Top Left"},
+          { "value": "top-right", "label": "Top Right"},
+          { "value": "bottom-left", "label": "Bottom Left"},
+          { "value": "bottom-right", "label": "Bottom Right"}
+        ]
+      },
+      {
+        "type": "text",
+        "id": "title1",
+        "label": "Heading",
+        "default": "Heading"
+      },
+      {
+        "type": "html",
+        "id": "subtitle",
+        "label": "Sub Heading",
+		"default": "<p>Faded short sleeves t-shirt with high neckline. Soft and stretchy material for a comfortable fit.</p>"
+      },
+      {
+        "type": "text",
+        "id": "button_label",
+        "label": "Button Label",
+        "default": "SHOP NOW"
+      },
+      {
+        "type": "url",
+        "id": "button_link",
+        "label": "Link"
+      },
+      {
+        "type": "header",
+        "content": "Section Bottom Spacing"
+      },
+      {
+        "type": "range", 
+        "id": "section_bottom_spacing_desktop",
+        "label": "Desktop",
+        "min": 0,
+        "max": 70,
+        "step": 10,
+        "default": 70
+      },
+      {
+        "type": "range",
+        "id": "section_bottom_spacing_mobile",
+        "label": "Mobile",
+        "min": 0, 
+        "max": 50,
+        "step": 10, 
+        "default": 30
+      }
+    ],
+    "presets": [
+      {
+        "name": "Video Block"
+      }
+    ]
+  }
+{% endschema %}
+
+{% stylesheet %}
+{% endstylesheet %}
+
+{% javascript %}
+{% endjavascript %}
