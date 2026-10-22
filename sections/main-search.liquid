@@ -68,7 +68,7 @@
           {% assign i = 1 %}
           {%- for product in search.results -%}
             <li>
-              {% render 'product-card-grid', product_card_product: product, media_size: settings.image_ratio, product_count: {{i}}, show_secondary_image: settings.show_secondary_image, show_vendor: settings.show_vendor%}
+              {% render 'product-card-grid', product_card_product: product, media_size: settings.image_ratio, product_count: i, show_secondary_image: settings.show_secondary_image, show_vendor: settings.show_vendor %}
               {% assign i = i | plus: 1 %}
             </li>
           {%- endfor -%}
@@ -125,3 +125,17 @@
   ]
 }
 {% endschema %}
+{% comment %}
+
+This file has been rewritten to preserve the original behavior.
+
+---
+Changes:
+- from: "{% render 'product-card-grid', product_card_product: product, media_size:
+    settings.image_ratio, product_count: {{i}}, show_secondary_image: settings.show_secondary_image,
+    show_vendor: settings.show_vendor%}"
+  to: "{% render 'product-card-grid', product_card_product: product, media_size: settings.image_ratio,
+    product_count: i, show_secondary_image: settings.show_secondary_image, show_vendor:
+    settings.show_vendor %}"
+  position: 3084..3287
+{% endcomment %}

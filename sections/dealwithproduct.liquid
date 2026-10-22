@@ -201,13 +201,7 @@
           {% assign counter = 1 %}
           {%- for product in collection.products limit: section.settings.products_to_show -%}
             <li class="grid__item">
-              {% render 'product-card-grid',
-                product_card_product: product,
-                media_size: settings.image_ratio,
-                product_count: {{counter}},
-                show_secondary_image: settings.show_secondary_image,
-                show_vendor: settings.show_vendor
-              %}
+              {% render 'product-card-grid', product_card_product: product, media_size: settings.image_ratio, product_count: counter, show_secondary_image: settings.show_secondary_image, show_vendor: settings.show_vendor %}
               {% assign counter = counter | plus: 1 %}
             </li>
           {%- else -%}
@@ -423,3 +417,22 @@
   ]
 }
 {% endschema %}
+{% comment %}
+
+This file has been rewritten to preserve the original behavior.
+
+---
+Changes:
+- from: |-
+    {% render 'product-card-grid',
+                    product_card_product: product,
+                    media_size: settings.image_ratio,
+                    product_count: {{counter}},
+                    show_secondary_image: settings.show_secondary_image,
+                    show_vendor: settings.show_vendor
+                  %}
+  to: "{% render 'product-card-grid', product_card_product: product, media_size: settings.image_ratio,
+    product_count: counter, show_secondary_image: settings.show_secondary_image, show_vendor:
+    settings.show_vendor %}"
+  position: 12758..12967
+{% endcomment %}

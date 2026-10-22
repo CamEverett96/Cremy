@@ -39,13 +39,7 @@
       {% assign i = 1 %}
       {% for recommendation in recommendations.products %}
         <li class="grid__item {{ grid_item_width }}{% if section.settings.swipe_on_mobile and section.settings.products_to_show > 2 %} slider__slide{% endif %}">
-          {% render 'product-card-grid',
-            product_card_product: recommendation,
-            media_size: settings.image_ratio,
-          	product_count: {{i}},
-            show_secondary_image: settings.show_secondary_image,
-            show_vendor: settings.show_vendor
-          %}
+          {% render 'product-card-grid', product_card_product: recommendation, media_size: settings.image_ratio, product_count: i, show_secondary_image: settings.show_secondary_image, show_vendor: settings.show_vendor %}
           {% assign i = i | plus: 1 %}
         </li>
       {% endfor %}
@@ -157,3 +151,18 @@
   ]
 }
 {% endschema %}
+{% comment %}
+
+This file has been rewritten to preserve the original behavior.
+
+---
+Changes:
+- from: "{% render 'product-card-grid',\n            product_card_product: recommendation,\n
+    \           media_size: settings.image_ratio,\n          \tproduct_count: {{i}},\n
+    \           show_secondary_image: settings.show_secondary_image,\n            show_vendor:
+    settings.show_vendor\n          %}"
+  to: "{% render 'product-card-grid', product_card_product: recommendation, media_size:
+    settings.image_ratio, product_count: i, show_secondary_image: settings.show_secondary_image,
+    show_vendor: settings.show_vendor %}"
+  position: 2034..2244
+{% endcomment %}
